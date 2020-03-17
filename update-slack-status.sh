@@ -57,8 +57,6 @@ function array-contains() {
     local ARRAY="${1}"
     local NEEDLE="${2}"
 
-    echo "1: ${ARRAY}"
-    echo "2: ${NEEDLE}"
     for ELEMENT in $ARRAY; do
         if [[ "${ELEMENT}" = "${NEEDLE}" ]]; then
             return 0
