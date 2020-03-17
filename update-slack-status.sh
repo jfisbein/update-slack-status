@@ -29,7 +29,7 @@ function slack-update-status() {
 
     local DATA=$(printf '{"status_text":"%s","status_emoji":"%s","status_expiration":%s}' "${TEXT}" "${EMOJI}" "${EXPIRATION}")
 
-    curl --silent -X POST https://slack.com/api/users.profile.set \
+    curl --silent --request POST https://slack.com/api/users.profile.set \
         --data-urlencode "profile=${DATA}" \
         --data-urlencode "token=${SLACK_TOKEN}"
 }
@@ -38,7 +38,7 @@ function slack-update-status() {
 function slack-reset-status() {
     local DATA='{"status_text":"","status_emoji":""}'
 
-    curl --silent -X POST https://slack.com/api/users.profile.set \
+    curl --silent --request POST https://slack.com/api/users.profile.set \
         --data-urlencode "profile=${DATA}" \
         --data-urlencode "token=${SLACK_TOKEN}"
 }
@@ -68,16 +68,16 @@ function array-contains() {
 
 # Main function
 function main() {
-    local SSID=$(iwgetid -r)
+    local SSID=$(iwgetid --raw)
     log "Connected to ${SSID}"
     if array-contains "${AT_WORK_SSIDS[*]}" "${SSID}"; then
-        log "Seting WORK status"
-        slack-update-status "${AT_WORK_MESSAGE}" "${AT_WORK_EMOJI}" $(date -d "$WORK_END_TIME today" +"%s") > /dev/null
+        log "Setting WORK status"
+        slack-update-status "${AT_WORK_MESSAGE}" "${AT_WORK_EMOJI}" $(date --date "$WORK_END_TIME today" +"%s") > /dev/null
     elif array-contains "${AT_HOME_SSIDS[*]}" "${SSID}"; then
         log "Setting HOME status"
-        slack-update-status "${AT_HOME_MESSAGE}" "${AT_HOME_EMOJI}" $(date -d "$WORK_END_TIME today" +"%s") > /dev/null
+        slack-update-status "${AT_HOME_MESSAGE}" "${AT_HOME_EMOJI}" $(date --date "$WORK_END_TIME today" +"%s") > /dev/null
     else
-        log "Reseting status"
+        log "Resetting status"
         slack-reset-status
     fi
 }
